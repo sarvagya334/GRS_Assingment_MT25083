@@ -60,7 +60,7 @@ resultsD: all
 # runs python script to generate plots from final_resultsD.csv
 plot:
 	@echo "Generating plots from final_resultsD.csv..."
-	python3 $(PYTHON_SCRIPT) final_resultsD.csv
+	python3 $(PYTHON_SCRIPT)
 
 
 # fullD target:
