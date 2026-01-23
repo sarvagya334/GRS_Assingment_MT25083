@@ -1,75 +1,47 @@
-# Readme
+# Performance Benchmarking Analysis
 
-## 1. Description
+This repository contains tools to visualize and analyze the performance metrics of `Program_A` and `Program_B`. The analysis focuses on resource utilization and execution time under varying parallel workloads.
 
-This project evaluates the performance characteristics and scalability of processes (using `fork()`) versus threads (using `pthread`). The system is tested under three specific workloads:
+## 📊 Overview
 
-* **CPU:** Computationally intensive mathematical operations.
-* **Memory:** High-frequency allocation and memory manipulation.
-* **I/O:** Sequential disk write operations.
+The benchmarking evaluates several key performance indicators (KPIs) across different worker configurations (2 to 8 workers):
 
-The suite measures CPU saturation, Memory footprint, and I/O throughput across varying worker counts (2 to 8), specifically observing the effects of resource pinning on a single CPU core.
+* **CPU Utilization (%)**: Measures processing intensity.
+* **Memory Usage (%)**: Tracks RAM consumption.
+* **I/O Throughput (kB/s)**: Monitors disk read/write operations.
+* **Execution Time (s)**: Evaluates overall efficiency and scaling.
 
-## 2. Files in the Submission
+## 🚀 Quick Start
 
-All files are located in the root directory as per the requirements:
+### Prerequisites
 
-* `MT25083_Part_A_Program_A_[cpu/io/mem].c`: Source files for process-based variants.
-* `MT25083_Part_A_Program_B_[cpu/io/mem].c`: Source files for thread-based variants.
-* `MT25083_PART_C_workers.h`: Shared worker function definitions.
-* `MT25083_PART_C_SHELL.sh`: Automation script for Part C (Table of 6 combinations).
-* `MT25083_PART_D_SHELL.sh`: Automation script for Part D (Scalability testing).
-* `MT25083_PART_D_plot_generate.py`: Python script for generating performance graphs.
-* `Makefile`: Advanced build script for compilation and experiment automation.
-* `MT25083_Report.pdf`: Final analysis of observed data.
-
-## 3. Compilation and Execution
-
-The `Makefile` has been configured to handle the entire lifecycle of the experiment.
-
-### Step 1: Compilation
-
-To compile all 6 program variants and object files:
-
+Ensure you have Python installed along with the following libraries:
 ```bash
 make
 ```
 
-### Step 2: Run Part C (Measurement Table)
-
-To execute the baseline benchmarks and generate `final_resultsC.csv`:
+### Usage
 
 ```bash
-make resultsC
+python analyze_performance.py
 ```
 
-### Step 3: Run Part D (Scalability & Plotting)
+## 📈 Key Insights from the Data
 
-To run the scalability tests (2-8 workers), generate `final_resultsD.csv`, and automatically create the performance plots:
+### 1. CPU vs. Memory Bottlenecks
 
-```bash
-make fullD
-```
+The data reveals a stark difference in how the two programs handle resources. While `Program_A` shows decreasing CPU percentage as workers increase, `Program_B` maintains a high CPU load, indicating a more aggressive threading model.
 
-(Alternatively, use `make resultsD` to just get the CSV, or `make plot` if the CSV already exists).
+### 2. The Swapping Threshold
 
-### Step 4: Cleanup
+The most significant performance degradation occurs in the `mem` functions at 8 workers. You will notice a massive spike in IO_Read and IO_Write values (exceeding 60,000 kB/s). This is a classic indicator of Disk Swapping, where physical memory is exhausted and the system begins using the hard drive as virtual memory.
 
-To remove binaries and object files:
+### 3. Scaling Efficiency
 
-```bash
-make clean
-```
+The `Time(s)` metric shows that increasing the number of workers does not always lead to faster execution. In many cases, the overhead of synchronization or resource contention causes the execution time to increase linearly with the number of workers.
 
-To remove generated CSV results:
+## 📂 Project Structure
 
-```bash
-make cleancsv
-```
-
-## 4. System Requirements
-
-* **Operating System:** Linux (tested on Ubuntu 22.04/24.04 or WSL2).
-* **Dependencies:** `gcc`, `sysstat` (for `iostat`), `bc` (for floating-point math in shell), `time`, Python 3 with `pandas`, `matplotlib`, and `seaborn`.
-* **Hardware:** The script assumes a disk identifier like `sda` or `nvme`.
-* **Permissions:** Some commands may require `sudo` for accurate hardware performance counters.
+* `MT25083_PART_D_CSV.csv`: Raw benchmark data.
+* `analyze_performance.py`: Python script for generating grouped bar charts.
+* `performance_comparison.png`: Generated visualization output.
